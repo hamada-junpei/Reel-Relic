@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reel & Relic — Prototype</title>
+  <style>
+    :root{
+      --bg:#0a0d12;
+      --panel:#111827;
+      --ink:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#8b5cf6; /* violet */
+      --accent-2:#06b6d4;/* cyan */
+      --glow: 0 0 40px rgba(139,92,246,.25), 0 0 80px rgba(6,182,212,.15);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 800px at 50% 10%, #0f172a 0%, #0b1220 55%, var(--bg) 100%) fixed;
+      color:var(--ink); font:16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+      overflow:hidden;
+    }
+    .scanlines::after{
+      content:""; position:fixed; inset:0; pointer-events:none; mix-blend-mode:soft-light; opacity:.25;
+      background:repeating-linear-gradient(to bottom, rgba(255,255,255,.05) 0 2px, transparent 2px 4px);
+    }
+    .grain::before{
+      content:""; position:fixed; inset:0; pointer-events:none; opacity:.07; mix-blend-mode:overlay;
+      background:radial-gradient(200px 150px at 20% 30%,rgba(255,255,255,.08),transparent 60%),
+                 radial-gradient(300px 220px at 70% 40%,rgba(255,255,255,.07),transparent 65%),
+                 radial-gradient(250px 180px at 50% 70%,rgba(255,255,255,.06),transparent 70%);
+      filter:contrast(150%);
+    }
+    .wrap{position:relative; height:100%; display:grid; place-items:center;}
+    .card{
+      width:min(880px, 92vw); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.15));
+      border:1px solid rgba(255,255,255,.06); box-shadow:0 20px 80px rgba(0,0,0,.5), var(--glow);
+      border-radius:24px; padding:28px 28px 24px;
+      backdrop-filter: blur(8px) saturate(120%);
+    }
+    .top{display:flex; gap:24px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .logo{display:block; width:360px; max-width:80vw}
+    .subtitle{color:var(--muted); letter-spacing:.08em}
+    .btns{display:flex; gap:12px; flex-wrap:wrap}
+    button{
+      appearance:none; border:1px solid rgba(255,255,255,.12); color:var(--ink);
+      background:linear-gradient(180deg, rgba(139,92,246,.15), rgba(6,182,212,.1));
+      padding:10px 14px; border-radius:12px; font-weight:600; letter-spacing:.02em;
+      transition:transform .06s ease, box-shadow .06s ease, background .2s ease; cursor:pointer;
+      box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(0) scale(.98)}
+    .ghost{background:transparent}
+
+    .settings{
+      margin-top:18px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; color:var(--muted);
+      padding-top:12px; border-top:1px dashed rgba(255,255,255,.08)
+    }
+    .field{display:flex; align-items:center; gap:8px}
+    input[type="range"]{accent-color:var(--accent)}
+
+    .footer{display:flex; justify-content:space-between; align-items:center; margin-top:18px; color:var(--muted); font-size:13px}
+    .hint{opacity:.85}
+
+    /* Tiny demo area to prove SFX hook-up */
+    .demo{
+      margin-top:16px; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px
+    }
+    .demo button{font-weight:700}
+
+  </style>
+</head>
+<body class="scanlines grain">
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <!-- Inline SVG Logo -->
+        <svg class="logo" viewBox="0 0 860 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reel & Relic">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#9ae6ff"/>
+              <stop offset="50%" stop-color="#8b5cf6"/>
+              <stop offset="100%" stop-color="#00ffd0"/>
+            </linearGradient>
+            <filter id="softGlow" x="-20%" y="-40%" width="140%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+              <feMerge>
+                <feMergeNode in="b"/><feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <rect x="6" y="6" width="848" height="168" rx="22" fill="none" stroke="url(#g)" stroke-opacity=".35"/>
+          <g filter="url(#softGlow)">
+            <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
+                  font-family="'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, 'Noto Sans JP', sans-serif"
+                  font-weight="900" font-size="78" fill="url(#g)" stroke="#ffffff" stroke-opacity="0.18" stroke-width="1.5">
+              REEL & RELIC
+            </text>
+            <text x="50%" y="82%" text-anchor="middle" dominant-baseline="middle"
+                  font-family="'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, 'Noto Sans JP', sans-serif"
+                  font-weight="600" font-size="22" fill="#d1d5db" fill-opacity=".85" letter-spacing=".35em">
+              SLOT · RPG · DUNGEON
+            </text>
+          </g>
+        </svg>
+        <div class="btns">
+          <button data-sfx="ui">プレイ開始</button>
+          <button class="ghost" data-sfx="ui">リール回す</button>
+          <button class="ghost" data-sfx="ui">クイック戦闘</button>
+        </div>
+      </div>
+
+      <div class="subtitle">単一HTML / ロゴSVG / クリック音をBase64で同梱（3種）</div>
+
+      <div class="settings">
+        <div class="field">
+          <label for="sfxSelect">クリック音:</label>
+          <select id="sfxSelect">
+            <option value="soft">Soft Tick</option>
+            <option value="pop" selected>Pop</option>
+            <option value="clack">Clack</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="vol">音量:</label>
+          <input id="vol" type="range" min="0" max="1" step="0.01" value="0.55"/>
+        </div>
+        <div class="field">
+          <label><input id="mute" type="checkbox"/> ミュート</label>
+        </div>
+      </div>
+
+      <div class="demo">
+        <button data-sfx="soft">Soft</button>
+        <button data-sfx="pop">Pop</button>
+        <button data-sfx="clack">Clack</button>
+      </div>
+
+      <div class="footer">
+        <div class="hint">任意のボタンに <code>data-sfx</code> を付けるだけで効果音が鳴ります。</div>
+        <div>v0.2 (single‑file shell)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded WAV (Base64) -->
+  <audio id="sfx-soft" preload="auto" src="data:audio/wav;base64,UklGRp8BAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YcABAAAAAP9IYdV67bB2Yw8yH0uHq8L3V0p8fjeOZKp9VbP7HkXbO2iR8u2w9X0b8VQGx7bJHnM1y0t0yJQReGq6n6+zV4p7nfrw5rD3y9rOeM6fNqv2o9t57P3t8v8f//8v8/8v//fP///w=="></audio>
+  <audio id="sfx-pop" preload="auto" src="data:audio/wav;base64,UklGRt0BAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YcABAAAAAP9GQFqVj6mGmY7ZpQ3w6wQwz0yQvV9H8mRwQv8qfRjvU3c4v6l5K2r4t9k1w1G2y0d7WTPB2v8cA8mMAf+1h0e+eEcz3cQkLh8b9dQ5d8m/2f//8P8//w8="></audio>
+  <audio id="sfx-clack" preload="auto" src="data:audio/wav;base64,UklGRlYBAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YcABAAAAAP9fX5mZkJ2cV1RPTk1OTk5OTk5PT09PT09PT09Pz8/PT09PT09OTk5OTk5OTk1NTU1NTU1NTU1PT09Pz8/"></audio>
+
+  <script>
+    // Inject base64 (templated below at build time)
+    const B64 = {
+      soft: "UklGRsAIAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YZwIAADmIPztYwNJAqDKUBxb6GMMaRwgCnfZgPnM+CXxWv/v3ADgpRVV9qnjJxef3TQK",
+      pop:  "UklGRnoKAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YVYKAAAAAAAC/wP8BfcH7gnhC9ANuw+hEYETWxUvF/wYwRqAHDYe4x+IISMjtSQ9Jrsn",
+      clack:"UklGRlYGAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YTIGAAAAAIwVSSmgOUVFS0s8Sx5FdTk3KbcViQBk6/vX3cdTvEa2L7YJvFbHKNc26vP+"
+    };
+    // Swap into <audio> srcs in case minifiers strip attributes later
+    document.getElementById('sfx-soft').src = 'data:audio/wav;base64,' + B64.soft;
+    document.getElementById('sfx-pop').src  = 'data:audio/wav;base64,' + B64.pop;
+    document.getElementById('sfx-clack').src= 'data:audio/wav;base64,' + B64.clack;
+
+    const registry = {
+      soft: document.getElementById('sfx-soft'),
+      pop:  document.getElementById('sfx-pop'),
+      clack:document.getElementById('sfx-clack'),
+    };
+
+    const select = document.getElementById('sfxSelect');
+    const range  = document.getElementById('vol');
+    const mute   = document.getElementById('mute');
+
+    // Persist user choice
+    const LSKEY = 'rr.sfxChoice';
+    const saved = JSON.parse(localStorage.getItem(LSKEY) || '{}');
+    if(saved.variant) select.value = saved.variant;
+    if(saved.volume  !== undefined) range.value = saved.volume;
+    if(saved.muted   !== undefined) mute.checked = saved.muted;
+
+    function currentAudio(kind){
+      const key = kind && registry[kind] ? kind : select.value;
+      const el  = registry[key];
+      el.volume = mute.checked ? 0 : Number(range.value);
+      el.currentTime = 0; // retrigger from start
+      return el;
+    }
+
+    function play(kind){
+      const el = currentAudio(kind);
+      // Some browsers require user gesture; try/catch to avoid console noise
+      try{ el.play(); }catch(e){}
+    }
+
+    document.addEventListener('click', (ev)=>{
+      const btn = ev.target.closest('[data-sfx]');
+      if(!btn) return;
+      const kind = btn.getAttribute('data-sfx');
+      play(kind === 'ui' ? undefined : kind);
+    });
+
+    // Save on change
+    [select, range, mute].forEach(el=> el.addEventListener('change', ()=>{
+      localStorage.setItem(LSKEY, JSON.stringify({
+        variant: select.value,
+        volume:  Number(range.value),
+        muted:   mute.checked
+      }));
+    }));
+
+    // Tiny keyboard demo: space to play selected
+    addEventListener('keydown', (e)=>{ if(e.code==='Space'){ e.preventDefault(); play(); }});
+
+  </script>
+
+  <!-- (removed: inlined B64 already set above) -->
+</body>
+</html>
