@@ -74,7 +74,7 @@
 </head>
 <body class="scanlines grain">
   <div class="wrap">
-    <div class="card">
+    <div id="title" class="card">
       <div class="top">
         <!-- Inline SVG Logo -->
         <svg class="logo" viewBox="0 0 860 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reel & Relic">
@@ -106,7 +106,7 @@
           </g>
         </svg>
         <div class="btns">
-          <button data-sfx="ui">プレイ開始</button>
+          <button id="startBtn" data-sfx="ui">プレイ開始</button>
           <button class="ghost" data-sfx="ui">リール回す</button>
           <button class="ghost" data-sfx="ui">クイック戦闘</button>
         </div>
@@ -141,6 +141,13 @@
       <div class="footer">
         <div class="hint">任意のボタンに <code>data-sfx</code> を付けるだけで効果音が鳴ります。</div>
         <div>v0.2 (single‑file shell)</div>
+      </div>
+    </div>
+    <div id="game" class="card" style="display:none">
+      <div>
+        <h1>ゲーム開始！</h1>
+        <p>ここにゲームが表示されます。</p>
+        <p><button id="backBtn" data-sfx="ui">タイトルに戻る</button></p>
       </div>
     </div>
   </div>
@@ -199,6 +206,26 @@
       const kind = btn.getAttribute('data-sfx');
       play(kind === 'ui' ? undefined : kind);
     });
+
+    // Toggle between title and game screens
+    const startBtn = document.getElementById('startBtn');
+    const backBtn  = document.getElementById('backBtn');
+    const title    = document.getElementById('title');
+    const game     = document.getElementById('game');
+
+    if(startBtn){
+      startBtn.addEventListener('click', ()=>{
+        title.style.display = 'none';
+        game.style.display  = 'block';
+      });
+    }
+
+    if(backBtn){
+      backBtn.addEventListener('click', ()=>{
+        game.style.display  = 'none';
+        title.style.display = 'block';
+      });
+    }
 
     // Save on change
     [select, range, mute].forEach(el=> el.addEventListener('change', ()=>{
